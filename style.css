@@ -1,0 +1,11 @@
+title{
+    animation: title-animation 5s ease-in-out;
+}
+
+@keyframes title-animation{
+    from{
+        transform: translateX(100px);
+    }to{
+        transform: translateX(-100px);
+    }
+}
