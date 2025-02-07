@@ -5,9 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>History.uz | Yangilik va maqolalar</title>
+    
+    <!-- Open Graph Meta Tags (Dinamik URL bilan) -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get("slug") || "default";
+        const currentUrl = window.location.origin + window.location.pathname + "?slug=" + slug;
+
+        document.write(`
+            <meta property="og:title" content="History.uz | Maqola va yangiliklar" />
+            <meta property="og:description" content="Tarixni biz bilan o'rganing." />
+            <meta property="og:image" content="./photo_2025-01-11_16-44-39.jpg" />
+            <meta property="og:url" content="${currentUrl}" />
+            <meta property="og:type" content="website" />
+        `);
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./fontawesome-free-5.15.4-web (1)/fontawesome-free-5.15.4-web/css/all.min.css">
+    <link rel="stylesheet" href="./fontawesome-free-5.15.4-web/css/all.min.css">
 </head>
 
 <body class="bg-gray-100 text-gray-900">
@@ -24,27 +40,6 @@
             <div id="article-content" class="text-gray-700 text-lg leading-relaxed"></div>
         </article>
 
-        <!-- Xatolik chiqsa ko'rsatish -->
-        <div id="error-message" class="text-center text-red-500 text-lg mt-6 hidden">
-            <button class="px-5 py-2 rounded-lg bg-red-500 text-white" onclick="window.location.reload();">Qayta yuklash</button>
-        </div>
-
-        <div class="w-full bg-white shadow-md rounded-lg gap-5 px-8 py-6 mt-4 flex items-center">
-            <div class="flex gap-2 items-center ">
-                <i class="fas fa-calendar text-gray-500"></i>
-                <span class="date text-gray-500"></span>
-            </div>
-            <div class="flex gap-2 items-center">
-                <i class="fas fa-eye text-gray-500"></i>
-                <span class="views text-gray-500"></span>
-            </div>
-            <div class="flex gap-2 items-center">
-                <i class="fas fa-thumbs-up text-gray-500"></i>
-                <span class="likes text-gray-500"></span>
-            </div>
-        </div>
-
-        <!-- Orqaga qaytish tugmasi -->
         <div class="text-center mt-6">
             <a href="http://historyuz.netlify.app/" target="_blank"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
@@ -54,28 +49,7 @@
     </div>
 
     <script>
-
         document.addEventListener("DOMContentLoaded", async () => {
-            async function updateArticleViews(articleId) {
-                try {
-                    const response = await fetch(`https://history-uz-backend.onrender.com/api/articles/${articleId}/views`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error("Ko'rishlar sonini oshirishda xatolik yuz berdi.");
-                    }
-
-                    console.log("Ko‘rishlar soni yangilandi");
-                } catch (error) {
-                    console.error("Xatolik:", error);
-                }
-            }
-
-            // URL'dan slug'ni olish
             const params = new URLSearchParams(window.location.search);
             const slug = params.get("slug") || "Noma'lum maqola";
 
@@ -83,33 +57,19 @@
                 const response = await fetch(`https://history-uz-backend.onrender.com/api/articles/slug/${slug}`);
                 if (!response.ok) throw new Error("Maqola topilmadi yoki mavjud emas.");
                 const article1 = await response.json();
-                const article = article1.article; // Konsolga natijani chiqarish
+                const article = article1.article;
 
-                console.log(article)
-
-                // Maqola ma'lumotlarini chiqarish
                 document.getElementById("article-title").textContent = article.title || "Maqola nomi mavjud emas";
                 document.getElementById("article-content").innerHTML = article.content || "Maqola matni mavjud emas";
-                document.querySelector(".date").innerHTML = article.updated_at.slice(0,10) || "NaN";
-                document.querySelector(".views").innerHTML = article.views? article.views : "NaN";
-                document.querySelector(".likes").innerHTML = article.likes? article.likes.length : "NaN";
 
-                // Agar maqolada rasm mavjud bo'lsa, uni qo'shish
                 if (article.image) {
                     const articleImage = document.getElementById("article-image");
                     articleImage.src = article.image;
                     articleImage.classList.remove("hidden");
-
                 }
-
-                // Maqola konteynerini ko'rsatish
                 document.getElementById("article-container").classList.remove("hidden");
-                await updateArticleViews(article.id);
-
             } catch (error) {
                 console.error("Xatolik:", error);
-                document.getElementById("error-message").textContent = error.message;
-                document.getElementById("error-message").classList.remove("hidden");
             }
         });
     </script>
